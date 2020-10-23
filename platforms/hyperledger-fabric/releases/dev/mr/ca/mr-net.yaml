@@ -1,0 +1,43 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: mr-net-ca
+  namespace: mr-net
+  annotations:
+    fluxcd.io/automated: "false"
+spec:
+  releaseName: mr-net-ca
+  chart:
+    git: git@github.com:rahultoraskarr/blockchain-automation-framework.git
+    ref: test220
+    path: platforms/hyperledger-fabric/charts/ca    
+  values:
+    metadata:
+      namespace: mr-net
+      images:
+        alpineutils: index.docker.io/hyperledgerlabs/alpine-utils:1.0
+        ca: hyperledger/fabric-ca:1.4.8
+    server:
+      name: ca
+      tlsstatus: true
+      admin: mr-admin
+    storage:
+      storageclassname: mrsc
+      storagesize: 512Mi
+    vault:
+      role: vault-role
+      address: http://vault.internal.dev2.aws.blockchaincloudpoc-develop.com:20001
+      authpath: mr-net-auth
+      secretcert: secret/crypto/peerOrganizations/mr-net/ca?ca.mr-net-cert.pem
+      secretkey: secret/crypto/peerOrganizations/mr-net/ca?mr-net-CA.key
+      secretadminpass: secret/credentials/mr-net/ca/mr?user
+      serviceaccountname: vault-auth
+      imagesecretname: regcred
+    service:
+      servicetype: ClusterIP
+      ports:
+        tcp:
+          port: 7054
+    proxy:
+      provider: haproxy
+      type: peer
