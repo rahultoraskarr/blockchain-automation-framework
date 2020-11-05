@@ -1,0 +1,50 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: channel-cr
+  namespace: cr-net
+  annotations:
+    fluxcd.io/automated: "false"
+spec:
+  releaseName: channel-cr
+  chart:
+    git: git@github.com:rahultoraskarr/blockchain-automation-framework.git
+    ref: new_test220
+    path: platforms/hyperledger-fabric/charts/create_channel   
+  values:
+    metadata:
+      namespace: cr-net
+      network:
+        version 2.2.0
+      images:
+        fabrictools: hyperledger/fabric-tools:2.2.0
+        alpineutils: index.docker.io/hyperledgerlabs/alpine-utils:1.0
+    peer:
+      name: peer0
+      address: peer0.cr-net:7051
+      localmspid: crMSP
+      loglevel: debug
+      tlsstatus: true
+
+    vault:
+      role: vault-role
+      address: http://vault.internal.dev2.aws.blockchaincloudpoc-develop.com:20001
+      authpath: cr-net-auth
+      adminsecretprefix: secret/crypto/peerOrganizations/cr-net/users/admin
+      orderersecretprefix: secret/crypto/peerOrganizations/cr-net/orderer 
+      serviceaccountname: vault-auth
+      imagesecretname: regcred
+
+    channel:
+      name: allchannel
+    orderer:
+      address: orderer13.hf.dev2.aws.blockchaincloudpoc-develop.com:8443
+    channeltx: |-
+      CrsDChgKFggCGgYIrK+O/QUiCmFsbGNoYW5uZWwSngMKmwMKCmFsbGNoYW5uZWwSNxIlCgtBcHBs
+      aWNhdGlvbhIWEgkKBWNyTVNQEgASCQoFbXJNU1ASABoOCgpDb25zb3J0aXVtEgAa0wISpwIKC0Fw
+      cGxpY2F0aW9uEpcCCAESCQoFbXJNU1ASABIJCgVjck1TUBIAGiQKDENhcGFiaWxpdGllcxIUEgoK
+      CAoEVjJfMBIAGgZBZG1pbnMiLAoLRW5kb3JzZW1lbnQSHRITCAMSDwoLRW5kb3JzZW1lbnQQAhoG
+      QWRtaW5zIjUKFExpZmVjeWNsZUVuZG9yc2VtZW50Eh0SEwgDEg8KC0VuZG9yc2VtZW50EAIaBkFk
+      bWlucyIiCgdSZWFkZXJzEhcSDQgDEgkKB1JlYWRlcnMaBkFkbWlucyIiCgdXcml0ZXJzEhcSDQgD
+      EgkKB1dyaXRlcnMaBkFkbWlucyIiCgZBZG1pbnMSGBIOCAMSCgoGQWRtaW5zEAIaBkFkbWlucyoG
+      QWRtaW5zGicKCkNvbnNvcnRpdW0SGRIXChVTdXBwbHlDaGFpbkNvbnNvcnRpdW0=
