@@ -1,0 +1,43 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: cr-net-ca
+  namespace: cr-net
+  annotations:
+    fluxcd.io/automated: "false"
+spec:
+  releaseName: cr-net-ca
+  chart:
+    git: git@github.com:rahultoraskarr/blockchain-automation-framework.git
+    ref: new_test220
+    path: platforms/hyperledger-fabric/charts/ca    
+  values:
+    metadata:
+      namespace: cr-net
+      images:
+        alpineutils: index.docker.io/hyperledgerlabs/alpine-utils:1.0
+        ca: hyperledger/fabric-ca:1.4.8
+    server:
+      name: ca
+      tlsstatus: true
+      admin: cr-admin
+    storage:
+      storageclassname: crsc
+      storagesize: 512Mi
+    vault:
+      role: vault-role
+      address: http://vault.internal.dev2.aws.blockchaincloudpoc-develop.com:20001
+      authpath: cr-net-auth
+      secretcert: secret/crypto/peerOrganizations/cr-net/ca?ca.cr-net-cert.pem
+      secretkey: secret/crypto/peerOrganizations/cr-net/ca?cr-net-CA.key
+      secretadminpass: secret/credentials/cr-net/ca/cr?user
+      serviceaccountname: vault-auth
+      imagesecretname: regcred
+    service:
+      servicetype: ClusterIP
+      ports:
+        tcp:
+          port: 7054
+    proxy:
+      provider: haproxy
+      type: peer
