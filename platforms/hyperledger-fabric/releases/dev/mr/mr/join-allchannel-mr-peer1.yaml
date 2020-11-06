@@ -1,0 +1,41 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: joinchannel-peer1-join-allchannel-mr-peer1
+  namespace: mr-net
+  annotations:
+    fluxcd.io/automated: "false"
+spec:
+  releaseName: joinchannel-peer1-join-allchannel-mr-peer1
+  chart:
+    git: git@github.com:rahultoraskarr/blockchain-automation-framework.git
+    ref: new_test220
+    path: platforms/hyperledger-fabric/charts/join_channel
+  values:
+    metadata:
+      namespace: mr-net
+      images:
+        fabrictools: hyperledger/fabric-tools:2.2.0
+        alpineutils: index.docker.io/hyperledgerlabs/alpine-utils:1.0
+
+    peer:
+      name: peer1
+      address: peer1.mr-net.hf.dev2.aws.blockchaincloudpoc-develop.com:8443
+      localmspid: mrMSP
+      loglevel: debug
+      tlsstatus: true
+
+    vault:
+      role: vault-role
+      address: http://vault.internal.dev2.aws.blockchaincloudpoc-develop.com:20001
+      authpath: mr-net-auth
+      adminsecretprefix: secret/crypto/peerOrganizations/mr-net/users/admin
+      orderersecretprefix: secret/crypto/peerOrganizations/mr-net/orderer
+      serviceaccountname: vault-auth
+      imagesecretname: regcred
+
+    channel:
+      name: allchannel      
+    orderer:
+      address: orderer13.hf.dev2.aws.blockchaincloudpoc-develop.com:8443
+
